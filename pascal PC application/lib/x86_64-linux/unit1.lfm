@@ -1,0 +1,218 @@
+object Form1: TForm1
+  Left = 587
+  Height = 599
+  Top = 74
+  Width = 895
+  Caption = 'gravimetr'
+  ClientHeight = 599
+  ClientWidth = 895
+  OnClose = FormClose
+  OnCreate = FormCreate
+  OnWindowStateChange = FormWindowStateChange
+  LCLVersion = '1.8.2.0'
+  object Memo1: TMemo
+    Left = 0
+    Height = 512
+    Top = 64
+    Width = 264
+    Anchors = [akTop, akLeft, akBottom]
+    Lines.Strings = (
+      'fdgdf hghgh'
+      'fgfgh ytuytu'
+    )
+    ScrollBars = ssAutoBoth
+    TabOrder = 0
+  end
+  object StatusBar1: TStatusBar
+    Left = 0
+    Height = 23
+    Top = 576
+    Width = 895
+    Panels = <>
+  end
+  object Chart1: TChart
+    AnchorSideBottom.Control = Splitter1
+    Left = 264
+    Height = 251
+    Hint = 'Масса'
+    Top = 69
+    Width = 632
+    AxisList = <    
+      item
+        Marks.LabelBrush.Style = bsClear
+        Minors = <>
+        Title.LabelFont.Orientation = 900
+        Title.LabelBrush.Style = bsClear
+      end    
+      item
+        Alignment = calBottom
+        Marks.LabelBrush.Style = bsClear
+        Minors = <>
+        Title.LabelBrush.Style = bsClear
+      end>
+    Foot.Brush.Color = clBtnFace
+    Foot.Font.Color = clBlue
+    Title.Brush.Color = clBtnFace
+    Title.Font.Color = clBlue
+    Title.Text.Strings = (
+      'TAChart'
+    )
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    object MainSeries: TLineSeries
+    end
+  end
+  object ConnectBtn: TButton
+    Left = 0
+    Height = 25
+    Top = 0
+    Width = 112
+    Caption = 'Подключить'
+    OnClick = ConnectBtnClick
+    TabOrder = 3
+  end
+  object FileName: TEdit
+    Left = 104
+    Height = 27
+    Top = 32
+    Width = 256
+    OnKeyPress = FileNameKeyPress
+    TabOrder = 4
+  end
+  object Savedir: TLabel
+    Left = 0
+    Height = 19
+    Top = 40
+    Width = 96
+    Caption = '/home/user/'
+    ParentColor = False
+  end
+  object DisconnectBtn: TButton
+    Left = 120
+    Height = 25
+    Top = 0
+    Width = 112
+    Caption = 'Отключить'
+    OnClick = DisconnectBtnClick
+    TabOrder = 5
+  end
+  object SaveDirBtn: TButton
+    Left = 480
+    Height = 25
+    Top = 0
+    Width = 112
+    Caption = 'Открыть'
+    OnClick = SaveDirBtnClick
+    TabOrder = 6
+  end
+  object SaveFileBtn: TButton
+    Left = 600
+    Height = 25
+    Top = 0
+    Width = 112
+    Caption = 'Сохранить'
+    OnClick = SaveFileBtnClick
+    TabOrder = 7
+  end
+  object TareBtn: TButton
+    Left = 720
+    Height = 25
+    Top = 0
+    Width = 112
+    Caption = 'Тара <0>'
+    OnClick = TareBtnClick
+    TabOrder = 8
+  end
+  object ClearBtn: TButton
+    Left = 840
+    Height = 25
+    Top = 0
+    Width = 112
+    Caption = 'Очистить'
+    OnClick = ClearBtnClick
+    TabOrder = 9
+  end
+  object StartBtn: TButton
+    Left = 240
+    Height = 25
+    Top = 0
+    Width = 112
+    Caption = 'Старт'
+    OnClick = StartBtnClick
+    TabOrder = 10
+  end
+  object StopBtn: TButton
+    Left = 360
+    Height = 25
+    Top = 0
+    Width = 112
+    Caption = 'Стоп'
+    OnClick = StopBtnClick
+    TabOrder = 11
+  end
+  object Chart2: TChart
+    AnchorSideTop.Control = Splitter1
+    AnchorSideTop.Side = asrBottom
+    Left = 264
+    Height = 254
+    Hint = 'Температура'
+    Top = 329
+    Width = 632
+    AxisList = <    
+      item
+        Marks.LabelBrush.Style = bsClear
+        Minors = <>
+        Title.LabelFont.Orientation = 900
+        Title.LabelBrush.Style = bsClear
+      end    
+      item
+        Alignment = calBottom
+        Marks.LabelBrush.Style = bsClear
+        Minors = <>
+        Title.LabelBrush.Style = bsClear
+      end>
+    Foot.Brush.Color = clBtnFace
+    Foot.Font.Color = clBlue
+    Title.Brush.Color = clBtnFace
+    Title.Font.Color = clBlue
+    Title.Text.Strings = (
+      'TAChart'
+    )
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    object Temp1Series: TLineSeries
+      LinePen.Color = clRed
+      LinePen.Width = 3
+    end
+    object Temp2Series: TLineSeries
+      LinePen.Color = clBlue
+      LinePen.Width = 3
+    end
+  end
+  object Splitter1: TSplitter
+    Cursor = crVSplit
+    Left = 264
+    Height = 9
+    Top = 320
+    Width = 624
+    Align = alCustom
+    Anchors = [akTop, akLeft, akRight]
+    Beveled = True
+    ParentColor = False
+    ResizeAnchor = akBottom
+  end
+  object SaveDirSelect: TSelectDirectoryDialog
+    left = 728
+    top = 8
+  end
+  object DetectorPort: TSdpoSerial
+    Active = False
+    BaudRate = br115200
+    DataBits = db8bits
+    Parity = pNone
+    FlowControl = fcNone
+    StopBits = sbOne
+    Device = '/dev/ttyACM0'
+    OnRxData = DetectorPortRxData
+    left = 848
+    top = 8
+  end
+end
