@@ -3,33 +3,35 @@
 
 //HX711 constructor (dout pin, sck pin)
 HX711_ADC LoadCell(4, 5);
-float tenz;
+float tenz; // data from HX711
 
-// для измерений
-long t,t1;
-bool work = false;
+// for measures
+long t,t1; // store time in milliseconds. t keep last measure time. t1 keep current milliseconds
+// make measures one time in one second. if t1 > t + 1000 then must send data to pc
+bool work = false; // send or dont send data to pc
 long starttime=round(millis()/1000);
 
-// для АЦП
-long temp1;
-long temp2;
-char csPin = 10; //Куда подключен пин чипселект
+// for adc 7793
+long temp1; //raw data from channel 1
+long temp2; //raw data from channel 2
+char csPin = 10; //where chipselect pin connected
 
 void setup() {
   Serial.begin(115200);
 
-  // настройка тензодатчика
+  // HX711 setup
   LoadCell.begin();
   long stabilisingtime = 2000; // tare preciscion can be improved by adding a few seconds of stabilising time
   LoadCell.start(stabilisingtime);
   LoadCell.setCalFactor(670.0); // user set calibration factor (float)
   
+  // spi setup
   SPI.begin();                           // wake up the SPI
   SPI.setDataMode(SPI_MODE3);            // datasheet p6-7
   SPI.setBitOrder(MSBFIRST);
   SPI.setClockDivider(SPI_CLOCK_DIV32);  // datasheet p6
 
-  // настройка ацп
+  // adc setup
   adc_reset();
   
   Serial.print("Ready");
@@ -37,16 +39,16 @@ void setup() {
 }
 
 void loop() {
-  //update() should be called at least as often as HX711 sample rate; >10Hz@10SPS, >80Hz@80SPS
+  //LoadCell.update() should be called at least as often as HX711 sample rate; >10Hz@10SPS, >80Hz@80SPS
   //longer delay in scetch will reduce effective sample rate (be carefull with delay() in loop)
   LoadCell.update();
   if (work) {
     unsigned long statusByte;
       bool nodata;
       /***************************************************/
-      adc_cr_write(0x15, 0x90); // усиление 16, униполярный, канал 1
-      //adc_mode_write(0x80,0x0A); //калибровка "0"
-      adc_mode_write(0x20, 0x03); //частота измерения 123 Гц, одно преобразование
+      adc_cr_write(0x15, 0x90); // amplifier 16, unipolar, channel 1
+      //adc_mode_write(0x80,0x0A); //callibration "0". there is no effect, so dont do it
+      adc_mode_write(0x20, 0x03); //freq 123 Гц, one measure
       nodata = true;
       while (nodata) {
         statusByte = adc_status_read();
@@ -54,9 +56,9 @@ void loop() {
       }
       temp1 = adc_read();
       /***************************************************/
-      adc_cr_write(0x15, 0x91); // усиление 16, униполярный, канал 2
-      //adc_mode_write(0x80,0x0A); //калибровка "0"
-      adc_mode_write(0x20, 0x03); //частота измерения 123 Гц, одно преобразование
+      adc_cr_write(0x15, 0x91); // amplifier 16, unipolar, channel 2
+      //adc_mode_write(0x80,0x0A); //callibration "0". there is no effect, so dont do it
+      adc_mode_write(0x20, 0x03); //freq 123 Гц, one measure
       nodata = true;
       while (nodata) {
         statusByte = adc_status_read();
@@ -108,11 +110,12 @@ unsigned char adc_status_read() {
   return incomingByte;
 }
 
+// read from data register
 unsigned long adc_read() {
   unsigned long registerValue = 0;
   unsigned char incomingByte = 0;
   digitalWrite(csPin, LOW);
-  incomingByte = SPI.transfer(0x58); // читаем из регистра данных
+  incomingByte = SPI.transfer(0x58); // read from data register
   for (int i = 0; i < 3; i++) {
     incomingByte = SPI.transfer(0x00);
     switch ( i ) {
@@ -136,17 +139,17 @@ unsigned long adc_read() {
 void adc_cr_write(char FirstByte, char SecondByte) {
   unsigned char incomingByte = 0;
   digitalWrite(csPin, LOW);
-  incomingByte = SPI.transfer(0x10); // писать в конфиг регистр
-  incomingByte = SPI.transfer(FirstByte); // что писать
-  incomingByte = SPI.transfer(SecondByte); // что писать
+  incomingByte = SPI.transfer(0x10); // write in config register
+  incomingByte = SPI.transfer(FirstByte); // data for write
+  incomingByte = SPI.transfer(SecondByte); // data for write
   digitalWrite(csPin, HIGH);
 }
 
 void adc_mode_write(char FirstByte, char SecondByte) {
   unsigned char incomingByte = 0;
   digitalWrite(csPin, LOW);
-  incomingByte = SPI.transfer(0x08); // писать в моде регистр
-  incomingByte = SPI.transfer(FirstByte); // что писать
-  incomingByte = SPI.transfer(SecondByte); // что писать
+  incomingByte = SPI.transfer(0x08); //write in mode register
+  incomingByte = SPI.transfer(FirstByte); // data for write
+  incomingByte = SPI.transfer(SecondByte); // data for write
   digitalWrite(csPin, HIGH);
 }
